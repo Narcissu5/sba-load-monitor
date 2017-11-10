@@ -1,0 +1,75 @@
+allprojects {
+    apply plugin: "java"
+    apply plugin: 'maven-publish'
+
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+project(":sba-load-monitor-server") {
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    version = "0.0.1"
+
+    sourceSets {
+        main {
+            java {
+                srcDir "src/main/java"
+            }
+            resources {
+                srcDir "build/webpack"
+            }
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId 'net.narcissu5'
+                artifactId 'sba-load-monitor-server'
+                version version
+
+                from components.java
+                artifact sourceJar {
+                    classifier "sources"
+                }
+            }
+        }
+    }
+}
+
+project(":sba-load-monitor-client") {
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    version = "0.0.1"
+
+    dependencies {
+        compile 'org.springframework:spring-context:4.3.12.RELEASE'
+        compile 'org.springframework:spring-webmvc:4.3.12.RELEASE'
+        compile 'org.springframework.boot:spring-boot-actuator:1.5.2.RELEASE'
+        compile 'javax.servlet:javax.servlet-api:3.1.0'
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId 'net.narcissu5'
+                artifactId 'sba-load-monitor-server-client'
+                version version
+
+                from components.java
+                artifact sourceJar {
+                    classifier "sources"
+                }
+            }
+        }
+    }
+}
