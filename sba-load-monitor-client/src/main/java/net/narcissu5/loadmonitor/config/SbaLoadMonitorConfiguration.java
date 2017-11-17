@@ -2,6 +2,7 @@ package net.narcissu5.loadmonitor.config;
 
 import net.narcissu5.loadmonitor.LoadEndPoint;
 import net.narcissu5.loadmonitor.util.ContainerCapture;
+import net.narcissu5.loadmonitor.util.CountHolder;
 import net.narcissu5.loadmonitor.util.LoadMonitorInterceptor;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,11 @@ public class SbaLoadMonitorConfiguration extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loadMonitorInterceptor());
+    }
+
+    @Bean
+    public CountHolder countHolder() {
+        return new CountHolder();
     }
 
     @Bean

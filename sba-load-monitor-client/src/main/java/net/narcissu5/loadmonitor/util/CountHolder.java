@@ -1,63 +1,50 @@
 package net.narcissu5.loadmonitor.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Created by 曾浩 on 2017/11/10.
  */
 public class CountHolder {
-    private static final int BUCKET_SIZE = 10;
+    private static final int BUCKET_SIZE = 16;
+    private static final int BUFFER_SIZE = 64;
 
-    private CountInSecond[] left;
-    private CountInSecond[] right;
-    private CountInSecond[] current;
+    private volatile CountInMinute[] buffer;
 
     public CountHolder() {
-        left = new CountInSecond[BUCKET_SIZE];
-        right = new CountInSecond[BUCKET_SIZE];
-        current = left;
-        long ts = System.currentTimeMillis();
-        clearBucket(left, ts - 10000);
-        clearBucket(right, ts);
-    }
-
-    public synchronized void flip() {
-        if (current == right) {
-            current = left;
-            clearBucket(right, System.currentTimeMillis());
-        } else {
-            current = right;
-            clearBucket(left, System.currentTimeMillis());
+        buffer = new CountInMinute[BUFFER_SIZE];
+        for (int idx = 0; idx < BUFFER_SIZE; idx++) {
+            buffer[idx] = new CountInMinute(0);
         }
     }
 
-    public void incr(long timestamp) {
-        int bucket = (int) (timestamp / 1000 / BUCKET_SIZE);
-        current[bucket].incr();
+    /**
+     * increase counter
+     *
+     * @param minute epoch minute
+     */
+    public void incr(long minute) {
+        int pos = (int) (minute & 0x3F);
+        if (buffer[pos].minute != minute) {
+            synchronized (this) {
+                if (buffer[pos].minute != minute) {
+                    int begin = (pos & 0x7ffffff0);
+                    long beginTs = (minute & 0x7ffffff0);
+                    for (int idx = begin; idx < begin + BUCKET_SIZE; idx++) {
+                        buffer[idx] = new CountInMinute(beginTs++);
+                    }
+                }
+            }
+        }
+        buffer[pos].incr();
     }
 
-    public void clearBucket(CountInSecond[] buckets, long ts) {
-        int mod = (int) (ts / 1000 / BUCKET_SIZE);
-        int first = mod * 10 + 10;
-        for (int idx = 0; idx < BUCKET_SIZE; idx++) {
-            buckets[idx] = new CountInSecond(first++);
-        }
-    }
-
-    protected enum Position {
-        RIGHT, LEFT
-    }
-
-    public class CountInSecond {
-        private final long timestamp;
-        private AtomicInteger count;
-
-        public CountInSecond(long timestamp) {
-            this.timestamp = timestamp;
-        }
-
-        public void incr() {
-            count.incrementAndGet();
-        }
+    /**
+     * getCount counter, only available in one minute
+     *
+     * @param timestamp in second
+     * @return
+     */
+    public CountInMinute getCount(long timestamp) {
+        int pos = (int) (timestamp % BUFFER_SIZE);
+        return buffer[pos];
     }
 }
