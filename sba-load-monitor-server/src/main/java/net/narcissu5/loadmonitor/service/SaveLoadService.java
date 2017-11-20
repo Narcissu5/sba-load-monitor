@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.util.LoadModel;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,6 +35,9 @@ public class SaveLoadService {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    SbaLoad1MDAO sbaLoad1MDAO;
 
     Map<String, LoadModel> currentApp;
 
@@ -71,6 +75,9 @@ public class SaveLoadService {
                         logger.debug("Get load from {}@{}:{}",
                                 instanceInfo.getAppName(), instanceInfo.getHostName(), model);
                     }
+
+                    sbaLoad1MDAO.insert(instanceInfo.getAppName(),instanceInfo.getHostName(),instanceInfo.getPort(),
+                            model.getCount(),(int)model.getMinute());
                 }
             }
         }
