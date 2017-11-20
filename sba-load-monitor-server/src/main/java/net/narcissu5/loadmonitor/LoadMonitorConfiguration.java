@@ -1,6 +1,7 @@
 package net.narcissu5.loadmonitor;
 
 import net.narcissu5.loadmonitor.controller.LoadController;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.service.SaveLoadService;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -57,5 +58,10 @@ public class LoadMonitorConfiguration {
     @Bean
     public LoadController loadController() {
         return new LoadController();
+    }
+
+    @Bean
+    public SbaLoad1MDAO sbaLoad1MDAO() {
+        return new SbaLoad1MDAO();
     }
 }

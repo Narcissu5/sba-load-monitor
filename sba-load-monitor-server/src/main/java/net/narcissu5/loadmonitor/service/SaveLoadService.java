@@ -14,8 +14,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.Map;
 /**
  * Created by 曾浩 on 2017/11/17.
  */
+@Service
 public class SaveLoadService {
     private static final Logger logger = LoggerFactory.getLogger(SaveLoadService.class);
 
@@ -63,7 +66,18 @@ public class SaveLoadService {
                     logger.info("Fail to get load of {}, status code: {}",
                             instanceInfo.getHostName(), resp.getStatusLine().getStatusCode());
                 } else {
-                    LoadModel model = objectMapper.readValue(resp.getEntity().getContent(), LoadModel.class);
+                    InputStream is = resp.getEntity().getContent();
+                    if (is.available() == 0) continue;
+                    LoadModel model;
+                    try {
+                        model = objectMapper.readValue(is, LoadModel.class);
+                    } catch (IOException e) {
+                        if(logger.isDebugEnabled()) {
+                            logger.debug("Unexpected error when get load from " + instanceInfo.getHostName(), e);
+                        }
+                        continue;
+                    }
+                    if(model.getMinute() == 0) continue;
                     LoadModel exist = currentApp.get(instanceInfo.getAppName());
                     if (exist == null) {
                         currentApp.put(instanceInfo.getAppName(), model);
@@ -76,8 +90,8 @@ public class SaveLoadService {
                                 instanceInfo.getAppName(), instanceInfo.getHostName(), model);
                     }
 
-                    sbaLoad1MDAO.insert(instanceInfo.getAppName(),instanceInfo.getHostName(),instanceInfo.getPort(),
-                            model.getCount(),(int)model.getMinute());
+                    sbaLoad1MDAO.insert(instanceInfo.getAppName(), instanceInfo.getHostName(), instanceInfo.getPort(),
+                            model.getCount(), (int) model.getMinute());
                 }
             }
         }
