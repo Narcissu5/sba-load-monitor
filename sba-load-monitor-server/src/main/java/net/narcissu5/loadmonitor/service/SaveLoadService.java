@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MAggrDAO;
 import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.util.LoadModel;
 import org.apache.http.HttpResponse;
@@ -42,6 +43,9 @@ public class SaveLoadService {
     @Autowired
     SbaLoad1MDAO sbaLoad1MDAO;
 
+    @Autowired
+    SbaLoad1MAggrDAO sbaLoad1MAggrDAO;
+
     Map<String, LoadModel> currentApp;
 
     public Map<String, LoadModel> getCurrent() {
@@ -72,12 +76,13 @@ public class SaveLoadService {
                     try {
                         model = objectMapper.readValue(is, LoadModel.class);
                     } catch (IOException e) {
-                        if(logger.isDebugEnabled()) {
+                        if (logger.isDebugEnabled()) {
                             logger.debug("Unexpected error when get load from " + instanceInfo.getHostName(), e);
                         }
                         continue;
                     }
-                    if(model.getMinute() == 0) continue;
+                    model.setAppName(instanceInfo.getAppName());
+                    if (model.getMinute() == 0) continue;
                     LoadModel exist = currentApp.get(instanceInfo.getAppName());
                     if (exist == null) {
                         currentApp.put(instanceInfo.getAppName(), model);
@@ -97,5 +102,9 @@ public class SaveLoadService {
         }
 
         this.currentApp = currentApp;
+
+        for (LoadModel loadModel : currentApp.values()) {
+            sbaLoad1MAggrDAO.insert(loadModel.getAppName(), loadModel.getCount(), (int) loadModel.getMinute());
+        }
     }
 }

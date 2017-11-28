@@ -1,6 +1,7 @@
 package net.narcissu5.loadmonitor;
 
 import net.narcissu5.loadmonitor.controller.LoadController;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MAggrDAO;
 import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.service.LoadExtractService;
 import net.narcissu5.loadmonitor.service.SaveLoadService;
@@ -71,4 +72,8 @@ public class LoadMonitorConfiguration {
         return new SbaLoad1MDAO();
     }
 
+    @Bean
+    public SbaLoad1MAggrDAO sbaLoad1MAggrDAO() {
+        return new SbaLoad1MAggrDAO();
+    }
 }

@@ -5,8 +5,10 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MAggrDAO;
 import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.model.Load1M;
+import net.narcissu5.loadmonitor.model.Load1MAggr;
 import net.narcissu5.loadmonitor.util.LoadModel;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -54,6 +56,9 @@ public class SaveLoadServiceTest {
     SbaLoad1MDAO sbaLoad1MDAO;
 
     @Autowired
+    SbaLoad1MAggrDAO sbaLoad1MAggrDAO;
+
+    @Autowired
     SaveLoadService saveLoadService;
 
     @Autowired
@@ -75,20 +80,31 @@ public class SaveLoadServiceTest {
         lm.setMinute(4444);
         CloseableHttpResponse resp2 = mock(CloseableHttpResponse.class);
         when(resp2.getStatusLine())
-                .thenReturn(new BasicStatusLine(new ProtocolVersion("http",1,1), HttpStatus.SC_OK,""));
-        when(resp2.getEntity()).thenReturn(new StringEntity(objectMapper.writeValueAsString(lm),"UTF-8"));
+                .thenReturn(new BasicStatusLine(new ProtocolVersion("http", 1, 1), HttpStatus.SC_OK, ""));
+        when(resp2.getEntity()).thenReturn(new StringEntity(objectMapper.writeValueAsString(lm), "UTF-8"));
         when(httpClient.execute(anyObject())).thenReturn(resp2);
     }
 
     @Test
     public void recordSingleAppTest() throws IOException, URISyntaxException {
         saveLoadService.recordLoad();
-        List<Load1M> loads = sbaLoad1MDAO.findByMinuteAndHostName(4444,"TestHost");
+        List<Load1M> loads = sbaLoad1MDAO.findByMinuteAndHostName(4444, "TestHost");
         Assert.assertEquals(1, loads.size());
         Load1M load = loads.get(0);
-        Assert.assertEquals("TestApp",load.getAppName());
-        Assert.assertEquals("TestHost",load.getHostName());
-        Assert.assertEquals(100,load.getCount());
-        Assert.assertEquals(4444,load.getMinute());
+        Assert.assertEquals("TestApp", load.getAppName());
+        Assert.assertEquals("TestHost", load.getHostName());
+        Assert.assertEquals(100, load.getCount());
+        Assert.assertEquals(4444, load.getMinute());
+    }
+
+    @Test
+    public void recordAggrTest() throws IOException, URISyntaxException {
+        saveLoadService.recordLoad();
+        List<Load1MAggr> loads = sbaLoad1MAggrDAO.findByAppName("TestApp");
+        Assert.assertEquals(1, loads.size());
+        Load1MAggr load = loads.get(0);
+        Assert.assertEquals("TestApp", load.getAppName());
+        Assert.assertEquals(100, load.getCount());
+        Assert.assertEquals(4444, load.getMinute());
     }
 }

@@ -2,6 +2,7 @@ package net.narcissu5.loadmonitor.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.discovery.EurekaClient;
+import net.narcissu5.loadmonitor.dao.SbaLoad1MAggrDAO;
 import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -28,6 +29,11 @@ public class TestApplication {
     @Bean
     public SbaLoad1MDAO sbaLoad1MDAO() {
         return new SbaLoad1MDAO();
+    }
+
+    @Bean
+    public SbaLoad1MAggrDAO sbaLoad1MAggrDAO() {
+        return new SbaLoad1MAggrDAO();
     }
 
     @Bean

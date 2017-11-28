@@ -30,7 +30,7 @@ module.exports = [function () {
                     formatter: function (params) {
                         params = params[0];
                         var date = new Date(params.name);
-                        return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+                        return date.toString();
                     },
                     axisPointer: {
                         animation: false
