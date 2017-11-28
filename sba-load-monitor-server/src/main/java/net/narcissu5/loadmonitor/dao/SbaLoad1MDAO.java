@@ -2,6 +2,8 @@ package net.narcissu5.loadmonitor.dao;
 
 import net.narcissu5.loadmonitor.model.Load1M;
 import net.narcissu5.loadmonitor.model.rowmapper.Load1MRowMapper;
+import net.narcissu5.loadmonitor.model.rowmapper.LoadModelRowMapper;
+import net.narcissu5.loadmonitor.util.LoadModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -32,5 +34,11 @@ public class SbaLoad1MDAO {
         return jdbcTemplate.query("SELECT id,app_name,port,host_name," +
                 "count,minute,created_at " +
                 "FROM load_1m WHERE host_name=? AND minute=?", Load1MRowMapper.INSTANCE, hostName, minute);
+    }
+
+    public List<LoadModel> sinceThen(int minute) {
+        return jdbcTemplate.query("SELECT count,minute,app_name " +
+                "FROM load_1m WHERE minute > ? " +
+                "ORDER BY app_name,minute", LoadModelRowMapper.INSTANCE, minute);
     }
 }

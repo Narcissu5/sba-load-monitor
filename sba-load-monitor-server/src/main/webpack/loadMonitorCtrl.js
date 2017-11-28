@@ -1,5 +1,9 @@
 'use strict';
 
-module.exports = function ($scope,$resource) {
-  $scope.message = 'hello world';
-};
+
+module.exports = ['$scope', '$http', function ($scope, $http) {
+
+    $http.get('load/today').then(function (resp) {
+        $scope.load = resp.data;
+    });
+}];

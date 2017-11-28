@@ -20,20 +20,21 @@ var angular = require('angular');
 var module = angular.module('sba-load-monitor', []);
 global.sbaModules.push(module.name);
 
+module.directive('lineChart', require('./lineDirective'));
 module.controller('loadMonitorCtrl', require('./loadMonitorCtrl.js'));
 
 module.config(function ($stateProvider) {
-  $stateProvider.state('load-monitor', {
-    url: '/load-monitor',
-    templateUrl: 'load-monitor/load-monitor.html',
-    controller: 'loadMonitorCtrl'
-  });
+    $stateProvider.state('load-monitor', {
+        url: '/load-monitor',
+        templateUrl: 'load-monitor/load-monitor.html',
+        controller: 'loadMonitorCtrl'
+    });
 });
 
 module.run(function (MainViews) {
-  MainViews.register({
-    title: 'Load',
-    state: 'load-monitor',
-    order: 99
-  });
+    MainViews.register({
+        title: 'Load',
+        state: 'load-monitor',
+        order: 99
+    });
 });

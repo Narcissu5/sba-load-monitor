@@ -4,10 +4,12 @@
   "scripts": {
     "build": "npm run build:js",
     "build:js": "webpack -p",
+    "dev:js": "webpack",
     "watch:js": "webpack -d --watch",
     "dev-server": "webpack-dev-server --port 9090"
   },
   "dependencies": {
+    "echarts": "3.7.2"
   },
   "devDependencies": {
     "clean-webpack-plugin": "0.1.14",

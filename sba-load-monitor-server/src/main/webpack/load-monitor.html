@@ -1,4 +1,8 @@
-<div class="container-fluid">
-  <h1>This is a test</h1>
-
+<div class="container">
+    <div ng-repeat="(k,v) in load" class="info-panel">
+        <div class="info-panel-title">{{ k }}</div>
+        <div class="info-panel-content">
+            <div class="load-line" line-chart data="v" class="row"></div>
+        </div>
+    </div>
 </div>

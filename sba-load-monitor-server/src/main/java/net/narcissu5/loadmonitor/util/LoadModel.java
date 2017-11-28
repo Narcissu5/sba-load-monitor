@@ -1,11 +1,23 @@
 package net.narcissu5.loadmonitor.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by 曾浩 on 2017/11/17.
  */
 public class LoadModel {
+    @JsonIgnore
+    private String appName;
     private long minute;
     private int count;
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
 
     public long getMinute() {
         return minute;
