@@ -88,10 +88,10 @@ public class SaveLoadService {
                     logger.info("Fail to get load of {}, status code: {}",
                             instanceInfo.getHostName(), resp.getStatusLine().getStatusCode());
                 } else {
-                    InputStream is = resp.getEntity().getContent();
-                    if (is.available() == 0) continue;
                     LoadModel model;
                     try {
+                        InputStream is = resp.getEntity().getContent();
+                        if (is.available() == 0) continue;
                         model = objectMapper.readValue(is, LoadModel.class);
                     } catch (IOException e) {
                         if (logger.isDebugEnabled()) {
@@ -100,6 +100,10 @@ public class SaveLoadService {
                         continue;
                     }
                     model.setAppName(instanceInfo.getAppName());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Get load from {}@{}:{}",
+                                instanceInfo.getAppName(), instanceInfo.getHostName(), model);
+                    }
                     if (model.getMinute() == 0) continue;
                     LoadModel exist = currentApp.get(instanceInfo.getAppName());
                     if (exist == null) {
@@ -107,12 +111,6 @@ public class SaveLoadService {
                     } else {
                         exist.add(model);
                     }
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Get load from {}@{}:{}",
-                                instanceInfo.getAppName(), instanceInfo.getHostName(), model);
-                    }
-
                     sbaLoad1MDAO.insert(instanceInfo.getAppName(), instanceInfo.getHostName(), instanceInfo.getPort(),
                             model.getCount(), (int) model.getMinute());
                 }
