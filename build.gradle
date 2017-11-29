@@ -95,7 +95,7 @@ project(":sba-load-monitor-client") {
         publications {
             mavenJava(MavenPublication) {
                 groupId 'net.narcissu5'
-                artifactId 'sba-load-monitor-server-client'
+                artifactId 'sba-load-monitor-client'
                 version version
 
                 from components.java
