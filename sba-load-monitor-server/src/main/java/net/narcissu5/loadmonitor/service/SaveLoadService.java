@@ -77,7 +77,13 @@ public class SaveLoadService {
                 builder.setPath("load");
 
                 HttpGet get = new HttpGet(builder.build());
-                HttpResponse resp = httpClient.execute(get);
+                HttpResponse resp = null;
+                try {
+                    resp = httpClient.execute(get);
+                } catch (IOException e) {
+                    logger.info("Error when execute request:{}:{}", get, e.getMessage());
+                    continue;
+                }
                 if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                     logger.info("Fail to get load of {}, status code: {}",
                             instanceInfo.getHostName(), resp.getStatusLine().getStatusCode());
