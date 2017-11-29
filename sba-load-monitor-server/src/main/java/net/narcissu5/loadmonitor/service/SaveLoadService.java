@@ -53,11 +53,23 @@ public class SaveLoadService {
     }
 
     public void recordLoad() throws URISyntaxException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Begin to fetch load data");
+        }
+
         Map<String, LoadModel> currentApp = new HashMap<>();
         List<Application> applications = eurekaClient.getApplications().getRegisteredApplications();
         for (Application application : applications) {
             List<InstanceInfo> instances = application.getInstances();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found application:{},instance:{}", application.getName(), instances.size());
+            }
             for (InstanceInfo instanceInfo : instances) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Begin to fetch load data,application:{},instance:{}",
+                            application.getName(), instanceInfo.getHostName());
+                }
+
                 URIBuilder builder = new URIBuilder();
                 builder.setScheme("http");
                 builder.setHost(instanceInfo.getIPAddr());
