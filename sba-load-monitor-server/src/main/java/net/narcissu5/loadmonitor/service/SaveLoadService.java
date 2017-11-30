@@ -10,6 +10,7 @@ import net.narcissu5.loadmonitor.util.LoadModel;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -76,7 +77,7 @@ public class SaveLoadService {
                                 instanceInfo.getAppName(), instanceInfo.getHostName(), model);
                     }
                     if (model.getMinute() == 0) {
-                        if(logger.isDebugEnabled()) {
+                        if (logger.isDebugEnabled()) {
                             logger.debug("Get load from {}@{}:{}, but minute is zero",
                                     instanceInfo.getAppName(), instanceInfo.getHostName(), model);
                         }
@@ -116,27 +117,24 @@ public class SaveLoadService {
                 .setSocketTimeout(CONNECTION_TIMEOUT_MS)
                 .build();
         get.setConfig(requestConfig);
-        HttpResponse resp = null;
-        try {
-            resp = httpClient.execute(get);
+        try (CloseableHttpResponse resp = httpClient.execute(get)) {
+            if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                logger.info("Fail to get load of {}, status code: {}", hostName, resp.getStatusLine().getStatusCode());
+                return null;
+            } else {
+                try (InputStream is = resp.getEntity().getContent()) {
+                    if (is.available() == 0) return null;
+                    model = objectMapper.readValue(is, LoadModel.class);
+                } catch (IOException e) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Unexpected error when get load from " + hostName, e);
+                    }
+                    return null;
+                }
+            }
         } catch (IOException e) {
             logger.info("Error when execute request:{}:{}", get, e.getMessage());
             return null;
-        }
-        if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            logger.info("Fail to get load of {}, status code: {}", hostName, resp.getStatusLine().getStatusCode());
-            return null;
-        } else {
-            try {
-                InputStream is = resp.getEntity().getContent();
-                if (is.available() == 0) return null;
-                model = objectMapper.readValue(is, LoadModel.class);
-            } catch (IOException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Unexpected error when get load from " + hostName, e);
-                }
-                return null;
-            }
         }
 
         return model;
