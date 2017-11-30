@@ -6,8 +6,10 @@ import net.narcissu5.loadmonitor.dao.SbaLoad1MDAO;
 import net.narcissu5.loadmonitor.service.LoadExtractService;
 import net.narcissu5.loadmonitor.service.SaveLoadService;
 import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -55,9 +57,12 @@ public class LoadMonitorConfiguration {
     @Bean
     public CloseableHttpClient httpClient() {
         SocketConfig sc = SocketConfig.custom().setSoTimeout(1000).build();
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setDefaultMaxPerRoute(3);
 
         return HttpClients.custom()
                 .setDefaultSocketConfig(sc)
+                .setConnectionManager(connectionManager)
                 .setConnectionTimeToLive(120, TimeUnit.SECONDS)
                 .build();
     }
