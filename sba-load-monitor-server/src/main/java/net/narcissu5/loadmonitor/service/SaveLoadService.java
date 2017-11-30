@@ -70,12 +70,13 @@ public class SaveLoadService {
             for (InstanceInfo instanceInfo : instances) {
                 LoadModel model = getLoadModel(instanceInfo.getIPAddr(),
                         instanceInfo.getPort(), instanceInfo.getHostName());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Get load from {}@{}:{}",
+                            instanceInfo.getAppName(), instanceInfo.getHostName(), model);
+                }
                 if (model != null) {
                     model.setAppName(instanceInfo.getAppName());
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Get load from {}@{}:{}",
-                                instanceInfo.getAppName(), instanceInfo.getHostName(), model);
-                    }
+
                     if (model.getMinute() == 0) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Get load from {}@{}:{}, but minute is zero",
