@@ -40,11 +40,16 @@ public class CountHolder {
     /**
      * getCount counter, only available in one minute
      *
-     * @param timestamp in second
+     * @param minute in minute
      * @return
      */
-    public CountInMinute getCount(long timestamp) {
-        int pos = (int) (timestamp % BUFFER_SIZE);
-        return buffer[pos];
+    public CountInMinute getCount(long minute) {
+        int pos = (int) (minute & 0x3F);
+        CountInMinute ret = buffer[pos];
+        if (ret.getMinute() == minute) {
+            return ret;
+        } else {
+            return new CountInMinute(minute);
+        }
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.net.UnknownHostException;
 
@@ -17,9 +18,9 @@ import java.net.UnknownHostException;
  */
 @Configuration
 @ManagementContextConfiguration
-public class SbaLoadMonitorConfiguration extends WebMvcConfigurationSupport {
+public class SbaLoadMonitorConfiguration extends WebMvcConfigurerAdapter {
     @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loadMonitorInterceptor());
     }
 

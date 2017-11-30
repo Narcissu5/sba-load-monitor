@@ -8,7 +8,8 @@ CREATE TABLE `load_1m` (
   `count` int(11) NOT NULL,
   `minute` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `minute` (`minute`,`app_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='load in 1 minute';
 
 CREATE TABLE `load_1m_aggr` (
@@ -17,5 +18,6 @@ CREATE TABLE `load_1m_aggr` (
   `count` int(11) NOT NULL,
   `minute` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `minute` (`minute`,`app_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='load in 1 minute aggregated';
