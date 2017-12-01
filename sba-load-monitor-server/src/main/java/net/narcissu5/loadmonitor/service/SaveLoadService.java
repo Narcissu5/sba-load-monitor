@@ -18,10 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ import java.util.Map;
  */
 @Service
 public class SaveLoadService {
+    private static final String PATH = "load";
+    private static final String SCHEMA = "http";
     private static final int CONNECTION_TIMEOUT_MS = 1000;
     private static final Logger logger = LoggerFactory.getLogger(SaveLoadService.class);
 
@@ -70,11 +74,12 @@ public class SaveLoadService {
             for (InstanceInfo instanceInfo : instances) {
                 LoadModel model = getLoadModel(instanceInfo.getIPAddr(),
                         instanceInfo.getPort(), instanceInfo.getHostName());
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Get load from {}@{}:{}",
-                            instanceInfo.getAppName(), instanceInfo.getHostName(), model);
-                }
+
                 if (model != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Get load from {}@{}@{}:{}",
+                                instanceInfo.getAppName(), instanceInfo.getHostName(), instanceInfo.getIPAddr(), model);
+                    }
                     model.setAppName(instanceInfo.getAppName());
 
                     if (model.getMinute() == 0) {
@@ -106,10 +111,10 @@ public class SaveLoadService {
         LoadModel model;
 
         URIBuilder builder = new URIBuilder();
-        builder.setScheme("http");
+        builder.setScheme(SCHEMA);
         builder.setHost(ipAddr);
         builder.setPort(port);
-        builder.setPath("load");
+        builder.setPath(PATH);
 
         HttpGet get = new HttpGet(builder.build());
         RequestConfig requestConfig = RequestConfig.custom()
@@ -120,12 +125,16 @@ public class SaveLoadService {
         get.setConfig(requestConfig);
         try (CloseableHttpResponse resp = httpClient.execute(get)) {
             if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                logger.info("Fail to get load of {}, status code: {}", hostName, resp.getStatusLine().getStatusCode());
+                logger.info("Fail to get load of {}@{}, status code: {}", hostName, ipAddr,
+                        resp.getStatusLine().getStatusCode());
                 return null;
             } else {
                 try (InputStream is = resp.getEntity().getContent()) {
-                    if (is.available() == 0) return null;
-                    model = objectMapper.readValue(is, LoadModel.class);
+                    String loadStr = StreamUtils.copyToString(is, Charset.forName("UTF-8"));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Get load from {},{}", hostName, loadStr);
+                    }
+                    model = objectMapper.readValue(loadStr, LoadModel.class);
                 } catch (IOException e) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Unexpected error when get load from " + hostName, e);

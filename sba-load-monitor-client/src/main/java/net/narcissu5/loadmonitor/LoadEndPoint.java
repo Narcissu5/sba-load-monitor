@@ -39,11 +39,6 @@ public class LoadEndPoint implements Endpoint {
     @Override
     public Object invoke() {
         CountInMinute count = countHolder.getCount((System.currentTimeMillis() / 1000 / 60) - 1);
-        try {
-            return objectMapper.writeValueAsString(count);
-        } catch (JsonProcessingException e) {
-            logger.warn("Unexpected error", e);
-            return null;
-        }
+        return count;
     }
 }
