@@ -13,13 +13,25 @@ module.exports = [function () {
             var echarts = require('echarts');
             var chart = echarts.init(element.children()[1]);
 
-            var series = scope.data.map(function (x) {
-                var time = new Date(x.minute * 60000);
+            function getLineData() {
+                var series = scope.data.map(function (x) {
+                    var time = new Date(x.minute * 60000);
+                    return {
+                        name: time.toString(),
+                        value: [time, x.count]
+                    };
+                });
+
                 return {
-                    name: time.toString(),
-                    value: [time, x.count]
+                    name: 'load',
+                    type: 'line',
+                    showSymbol: false,
+                    hoverAnimation: false,
+                    data: series
                 };
-            });
+            }
+
+            var lineData = getLineData();
 
             var option = {
                 title: {
@@ -49,15 +61,16 @@ module.exports = [function () {
                         show: false
                     }
                 },
-                series: [{
-                    name: 'load',
-                    type: 'line',
-                    showSymbol: false,
-                    hoverAnimation: false,
-                    data: series
-                }]
+                series: [lineData]
             };
             chart.setOption(option);
+
+            scope.$watch('data', function () {
+                var lineData = getLineData();
+                chart.setOption({
+                    series: [lineData]
+                });
+            });
         }
     };
 }];
