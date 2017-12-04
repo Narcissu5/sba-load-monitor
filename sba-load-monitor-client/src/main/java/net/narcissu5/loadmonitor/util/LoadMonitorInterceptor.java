@@ -18,6 +18,6 @@ public class LoadMonitorInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
-        countHolder.incr(System.currentTimeMillis() / 1000 / 60);
+        countHolder.incr(System.currentTimeMillis() / 1000 / 60, response.getStatus());
     }
 }

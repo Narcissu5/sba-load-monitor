@@ -25,6 +25,11 @@ public class Load1MRowMapper implements RowMapper<Load1M> {
         load1M.setHostName(rs.getString("host_name"));
         load1M.setCount(rs.getInt("count"));
         load1M.setMinute(rs.getInt("minute"));
+        load1M.setS1xx(rs.getInt("s1xx"));
+        load1M.setS2xx(rs.getInt("s2xx"));
+        load1M.setS3xx(rs.getInt("s3xx"));
+        load1M.setS4xx(rs.getInt("s4xx"));
+        load1M.setS5xx(rs.getInt("s5xx"));
         return load1M;
     }
 }

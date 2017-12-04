@@ -20,6 +20,11 @@ public class Load1MAggrRowMapper implements RowMapper<Load1MAggr> {
         ret.setCount(rs.getInt("count"));
         ret.setMinute(rs.getInt("minute"));
         ret.setCreatedAt(rs.getTimestamp("created_at"));
+        ret.setS1xx(rs.getInt("s1xx"));
+        ret.setS2xx(rs.getInt("s2xx"));
+        ret.setS3xx(rs.getInt("s3xx"));
+        ret.setS4xx(rs.getInt("s4xx"));
+        ret.setS5xx(rs.getInt("s5xx"));
         return ret;
     }
 }

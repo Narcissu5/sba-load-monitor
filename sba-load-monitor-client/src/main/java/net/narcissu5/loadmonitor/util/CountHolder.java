@@ -21,7 +21,7 @@ public class CountHolder {
      *
      * @param minute epoch minute
      */
-    public void incr(long minute) {
+    public void incr(long minute, int httpStatusCode) {
         int pos = (int) (minute & 0x3F);
         if (buffer[pos].minute != minute) {
             synchronized (this) {
@@ -34,7 +34,7 @@ public class CountHolder {
                 }
             }
         }
-        buffer[pos].incr();
+        buffer[pos].incr(httpStatusCode);
     }
 
     /**

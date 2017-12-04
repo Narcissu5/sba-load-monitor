@@ -96,14 +96,15 @@ public class SaveLoadService {
                         exist.add(model);
                     }
                     sbaLoad1MDAO.insert(instanceInfo.getAppName(), instanceInfo.getHostName(), instanceInfo.getPort(),
-                            model.getCount(), (int) model.getMinute());
+                            model.getCount(), (int) model.getMinute(), model.getHttpStatus());
                 }
             }
         }
 
         this.currentApp = currentApp;
         for (LoadModel loadModel : currentApp.values()) {
-            sbaLoad1MAggrDAO.insert(loadModel.getAppName(), loadModel.getCount(), (int) loadModel.getMinute());
+            sbaLoad1MAggrDAO.insert(loadModel.getAppName(), loadModel.getCount(),
+                    (int) loadModel.getMinute(), loadModel.getHttpStatus());
         }
     }
 

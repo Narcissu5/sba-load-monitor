@@ -24,20 +24,21 @@ public class SbaLoad1MDAO {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void insert(String appName, String hostName, int port, int count, int minute) {
+    public void insert(String appName, String hostName, int port, int count, int minute, int[] httpStatus) {
         jdbcTemplate.update("INSERT INTO load_1m " +
-                "(app_name,port,host_name,count,minute) " +
-                "VALUES (?,?,?,?,?)", appName, port, hostName, count, minute);
+                        "(app_name,port,host_name,count,minute,s1xx,s2xx,s3xx,s4xx,s5xx) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?)", appName, port, hostName, count, minute,
+                httpStatus[1], httpStatus[2], httpStatus[3], httpStatus[4], httpStatus[5]);
     }
 
     public List<Load1M> findByMinuteAndHostName(int minute, String hostName) {
         return jdbcTemplate.query("SELECT id,app_name,port,host_name," +
-                "count,minute,created_at " +
+                "count,minute,created_at,s1xx,s2xx,s3xx,s4xx,s5xx " +
                 "FROM load_1m WHERE host_name=? AND minute=?", Load1MRowMapper.INSTANCE, hostName, minute);
     }
 
     public List<LoadModel> sinceThen(int minute) {
-        return jdbcTemplate.query("SELECT count,minute,app_name " +
+        return jdbcTemplate.query("SELECT count,minute,app_name,s1xx,s2xx,s3xx,s4xx,s5xx " +
                 "FROM load_1m WHERE minute > ? " +
                 "ORDER BY app_name,minute", LoadModelRowMapper.INSTANCE, minute);
     }

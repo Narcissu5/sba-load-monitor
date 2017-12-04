@@ -23,9 +23,10 @@ public class SbaLoad1MAggrDAO {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void insert(String appName, int count, int minute) {
-        jdbcTemplate.update("INSERT INTO load_1m_aggr (app_name,count,minute) VALUES (?,?,?)",
-                appName, count, minute);
+    public void insert(String appName, int count, int minute, int[] httpStatus) {
+        jdbcTemplate.update("INSERT INTO load_1m_aggr (app_name,count,minute,s1xx,s2xx,s3xx,s4xx,s5xx)" +
+                        " VALUES (?,?,?,?,?,?,?,?)",
+                appName, count, minute, httpStatus[1], httpStatus[2], httpStatus[3], httpStatus[4], httpStatus[5]);
     }
 
     /**
@@ -34,12 +35,12 @@ public class SbaLoad1MAggrDAO {
      * @param appName
      */
     public List<Load1MAggr> findByAppName(String appName) {
-        return jdbcTemplate.query("SELECT id,app_name,count,minute,created_at " +
+        return jdbcTemplate.query("SELECT id,app_name,count,minute,created_at,s1xx,s2xx,s3xx,s4xx,s5xx " +
                 "FROM load_1m_aggr WHERE app_name = ?", Load1MAggrRowMapper.INSTANCE, appName);
     }
 
     public List<LoadModel> sinceThen(int minute) {
-        return jdbcTemplate.query("SELECT count,minute,app_name " +
+        return jdbcTemplate.query("SELECT count,minute,app_name,s1xx,s2xx,s3xx,s4xx,s5xx " +
                 "FROM load_1m WHERE minute > ? " +
                 "ORDER BY app_name,minute", LoadModelRowMapper.INSTANCE, minute);
     }

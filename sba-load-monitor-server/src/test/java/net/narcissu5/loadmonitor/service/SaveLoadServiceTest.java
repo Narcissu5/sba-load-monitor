@@ -78,6 +78,7 @@ public class SaveLoadServiceTest {
         LoadModel lm = new LoadModel();
         lm.setCount(100);
         lm.setMinute(4444);
+        lm.setHttpStatus(new int[]{0, 1, 2, 3, 4, 5});
         CloseableHttpResponse resp2 = mock(CloseableHttpResponse.class);
         when(resp2.getStatusLine())
                 .thenReturn(new BasicStatusLine(new ProtocolVersion("http", 1, 1), HttpStatus.SC_OK, ""));
@@ -95,6 +96,7 @@ public class SaveLoadServiceTest {
         Assert.assertEquals("TestHost", load.getHostName());
         Assert.assertEquals(100, load.getCount());
         Assert.assertEquals(4444, load.getMinute());
+        Assert.assertEquals(3,load.getS3xx());
     }
 
     @Test
@@ -106,5 +108,6 @@ public class SaveLoadServiceTest {
         Assert.assertEquals("TestApp", load.getAppName());
         Assert.assertEquals(100, load.getCount());
         Assert.assertEquals(4444, load.getMinute());
+        Assert.assertEquals(4,load.getS4xx());
     }
 }
