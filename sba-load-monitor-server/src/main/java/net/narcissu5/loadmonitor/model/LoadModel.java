@@ -59,7 +59,8 @@ public class LoadModel {
     public void add(LoadModel model) {
         if (model != null) {
             this.count += model.count;
-            if (this.httpStatus.length == 6 && model.httpStatus.length == 6) {
+            if (this.httpStatus != null && this.httpStatus.length == 6 &&
+                    model.httpStatus != null && model.httpStatus.length == 6) {
                 this.httpStatus[0] += model.httpStatus[0];
                 this.httpStatus[1] += model.httpStatus[1];
                 this.httpStatus[2] += model.httpStatus[2];
