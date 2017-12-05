@@ -67,8 +67,6 @@ public class LoadModel {
                 this.httpStatus[3] += model.httpStatus[3];
                 this.httpStatus[4] += model.httpStatus[4];
                 this.httpStatus[5] += model.httpStatus[5];
-            } else {
-                logger.warn("Unexpected httpStatus length:{} or {}", this.httpStatus.length, model.httpStatus.length);
             }
         }
     }
