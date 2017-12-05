@@ -1,8 +1,9 @@
 package net.narcissu5.loadmonitor.controller;
 
+import net.narcissu5.loadmonitor.model.LoadWrapper;
 import net.narcissu5.loadmonitor.service.LoadExtractService;
 import net.narcissu5.loadmonitor.service.SaveLoadService;
-import net.narcissu5.loadmonitor.util.LoadModel;
+import net.narcissu5.loadmonitor.model.LoadModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +25,8 @@ public class LoadController {
     LoadExtractService loadExtractService;
 
     @GetMapping("today")
-    public Map<String,List<LoadModel>> getToday() {
-        return  loadExtractService.getToday();
+    public LoadWrapper getToday() {
+        return loadExtractService.getToday();
     }
 
     @GetMapping("current")

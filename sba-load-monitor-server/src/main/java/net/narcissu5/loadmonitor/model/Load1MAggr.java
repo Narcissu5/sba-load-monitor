@@ -1,20 +1,30 @@
 package net.narcissu5.loadmonitor.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.sql.Timestamp;
 
 /**
  * Created by 曾浩 on 2017/11/28.
  */
 public class Load1MAggr {
+    @JsonIgnore
     private long id;
+    @JsonIgnore
     private String appName;
     private int count;
     private int minute;
+    @JsonIgnore
     private int s1xx;
+    @JsonIgnore
     private int s2xx;
+    @JsonIgnore
     private int s3xx;
+    @JsonIgnore
     private int s4xx;
+    @JsonIgnore
     private int s5xx;
+    @JsonIgnore
     private Timestamp createdAt;
 
     public long getId() {

@@ -1,6 +1,6 @@
 package net.narcissu5.loadmonitor.model.rowmapper;
 
-import net.narcissu5.loadmonitor.util.LoadModel;
+import net.narcissu5.loadmonitor.model.LoadModel;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -25,6 +25,7 @@ public class LoadModelRowMapper implements RowMapper<LoadModel> {
         int httpStatus[] = new int[]{0, rs.getInt("s1xx"), rs.getInt("s2xx"), rs.getInt("s3xx"),
                 rs.getInt("s4xx"), rs.getInt("s5xx")};
         httpStatus[0] = ret.getCount() - httpStatus[1] - httpStatus[2] - httpStatus[3] - httpStatus[4] - httpStatus[5];
+        ret.setHttpStatus(httpStatus);
         return ret;
     }
 }

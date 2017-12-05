@@ -5,7 +5,7 @@ module.exports = ['$scope', '$http', '$interval', function ($scope, $http, $inte
 
 
     $http.get('load/today').then(function (resp) {
-        $scope.load = resp.data;
+        $scope.load = resp.data.loads;
     });
 
     $interval(function () {

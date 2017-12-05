@@ -3,7 +3,7 @@ package net.narcissu5.loadmonitor.dao;
 import net.narcissu5.loadmonitor.model.Load1M;
 import net.narcissu5.loadmonitor.model.rowmapper.Load1MRowMapper;
 import net.narcissu5.loadmonitor.model.rowmapper.LoadModelRowMapper;
-import net.narcissu5.loadmonitor.util.LoadModel;
+import net.narcissu5.loadmonitor.model.LoadModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -25,6 +25,9 @@ public class SbaLoad1MDAO {
     }
 
     public void insert(String appName, String hostName, int port, int count, int minute, int[] httpStatus) {
+        if (httpStatus == null) {
+            httpStatus = new int[6];
+        }
         jdbcTemplate.update("INSERT INTO load_1m " +
                         "(app_name,port,host_name,count,minute,s1xx,s2xx,s3xx,s4xx,s5xx) " +
                         "VALUES (?,?,?,?,?,?,?,?,?,?)", appName, port, hostName, count, minute,
@@ -38,7 +41,7 @@ public class SbaLoad1MDAO {
     }
 
     public List<LoadModel> sinceThen(int minute) {
-        return jdbcTemplate.query("SELECT count,minute,app_name,s1xx,s2xx,s3xx,s4xx,s5xx " +
+        return jdbcTemplate.query("SELECT count,minute,app_name,s1xx,s2xx,s3xx,s4xx,s5xx,created_at " +
                 "FROM load_1m WHERE minute > ? " +
                 "ORDER BY app_name,minute", LoadModelRowMapper.INSTANCE, minute);
     }
